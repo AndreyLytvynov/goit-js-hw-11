@@ -1,2 +1,13 @@
 @import './common';
 @import './example';
+
+// .search-form {
+//   & input {
+//     border: 2px solid red;
+//   }
+// }
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
