@@ -18,14 +18,16 @@ let searchValue = '';
  * @param {Event} e ивент формы
  */
 async function onSubmitForm(e) {
+  resetParameters();
   e.preventDefault();
   loadMoreBtnEl.classList.add('is-hidden');
   galleryEl.innerHTML = '';
-  // nextPage = 1;
-  // calcHits = 0;
+
   searchValue = e.currentTarget.searchQuery.value.trim();
   if (!searchValue) {
-    // loadMoreBtnEl.classList.add('is-hidden');
+    Notiflix.Notify.warning(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
     return;
   }
 
@@ -47,11 +49,18 @@ async function onClickLoadMoreBtn(e) {
   if (calcHits >= totalHits) {
     console.log('HVATIT');
     loadMoreBtnEl.classList.add('is-hidden');
+    resetParameters();
     return;
   }
   loadMoreBtnEl.classList.remove('is-hidden');
 }
 
+/**
+ * Генерирует и рендерит разметку на страницу
+ * @param {*} name значение поля инпут, для поиска
+ * @param {*} page страница api которую нужно загрузить
+ * @returns завершение функции при проверках
+ */
 async function CreateAndAddMarkup(name, page) {
   try {
     const data = await getAllCountries(name, page);
@@ -79,7 +88,7 @@ async function CreateAndAddMarkup(name, page) {
         }) => {
           return `
     <div class="photo-card"> 
-    
+        <div class="box-img"><img src="${webformatURL}" alt="${tags}" loading="lazy" /></div>
         <div class="info">
             <p class="info-item">
                 <b>likes</b><span>${likes}</span>
@@ -102,25 +111,12 @@ async function CreateAndAddMarkup(name, page) {
     galleryEl.insertAdjacentHTML('beforeend', markup);
     loadMoreBtnEl.classList.remove('is-hidden');
     if (calcHits >= totalHits) {
-      Notiflix.Notify.warning('Cartinoc bolshe net');
+      Notiflix.Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+      );
       loadMoreBtnEl.classList.add('is-hidden');
-      // resetParameters();
-
-      // nextPage = 1;
-      // calcHits = 0;
-      // totalHits;
-      // searchValue = '';
-
-      // console.log(nextPage, ' -nextPage');
-      console.log(calcHits, ' -calcPage');
-      console.log(totalHits, ' -totalHits');
-      // console.log(searchValue, ' -searchValue');
       return;
     }
-    // console.log(nextPage, ' -nextPage');
-    // console.log(calcHits, ' -nextPage');
-    // console.log(totalHits, ' -totalHits');
-    // console.log(searchValue, ' -searchValue');
   } catch (error) {
     console.log(error, error.message);
   }
@@ -133,6 +129,7 @@ function resetParameters() {
   searchValue = '';
 }
 
-// <div class="box-img">
-//   <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-// </div>;
+// console.log(nextPage, ' -nextPage');
+// console.log(calcHits, ' -calcHits');
+// console.log(totalHits, ' -totalHits');
+// console.log(searchValue, ' -searchValue');
