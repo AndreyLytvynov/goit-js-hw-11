@@ -33,7 +33,6 @@ async function onSubmitForm(e) {
 
   await CreateAndAddMarkup(searchValue);
   if (calcHits >= totalHits) {
-    console.log('HVATIT');
     return;
   }
 }
@@ -108,8 +107,11 @@ async function CreateAndAddMarkup(name, page) {
         }
       )
       .join('');
+
     galleryEl.insertAdjacentHTML('beforeend', markup);
+
     loadMoreBtnEl.classList.remove('is-hidden');
+
     if (calcHits >= totalHits) {
       Notiflix.Notify.warning(
         "We're sorry, but you've reached the end of search results."

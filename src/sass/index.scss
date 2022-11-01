@@ -7,6 +7,10 @@
 //   }
 // }
 body {
+  display: flex;
+  flex-direction: column;
+  // align-items: center;
+  // justify-content: space-between;
   padding: 10px;
 }
 .gallery {
@@ -69,5 +73,35 @@ img {
   &:hover {
     background: #2196f3;
     color: azure;
+  }
+}
+
+.search-form {
+  text-align: center;
+  & input {
+    padding-left: 10px;
+    width: 358px;
+    height: 50px;
+    left: 815px;
+    top: 2787px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.15));
+    border-radius: 4px;
+    outline: none;
+  }
+  & button {
+    width: 200px;
+    height: 50px;
+    left: 1185px;
+    top: 2787px;
+    background: #cae2f7;
+    color: #6e8499;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    border: none;
+    &:hover {
+      background: #a6cef1;
+      color: #41576b;
+    }
   }
 }
