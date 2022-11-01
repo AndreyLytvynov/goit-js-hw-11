@@ -11,22 +11,45 @@ loadMoreBtnEl.addEventListener('click', onClickLoadMoreBtn);
 let nextPage = 1;
 let calcHits = 0;
 let totalHits;
+let searchValue = '';
 
+/**
+ * Функция сабмита формы
+ * @param {Event} e ивент формы
+ */
 async function onSubmitForm(e) {
   e.preventDefault();
+  loadMoreBtnEl.classList.add('is-hidden');
   galleryEl.innerHTML = '';
-  nextPage = 1;
-  calcHits = 0;
-  const searchValue = e.currentTarget.searchQuery.value;
-  await CreateAndAddMarkup(searchValue);
-}
+  // nextPage = 1;
+  // calcHits = 0;
+  searchValue = e.currentTarget.searchQuery.value.trim();
+  if (!searchValue) {
+    // loadMoreBtnEl.classList.add('is-hidden');
+    return;
+  }
 
-function onClickLoadMoreBtn(e) {
+  await CreateAndAddMarkup(searchValue);
   if (calcHits >= totalHits) {
     console.log('HVATIT');
     return;
   }
-  CreateAndAddMarkup('car', nextPage);
+}
+
+/**
+ * Функция выпоняется при событии "click", нажатии на кнопку "Load More"
+ * @param {Event} e ивент клика по кнопке
+ * @returns завержает исполнение функции если если текущее кол-во фото на странице >= максимальному кол-ву доспнупному на сервере
+ */
+async function onClickLoadMoreBtn(e) {
+  loadMoreBtnEl.classList.add('is-hidden');
+  await CreateAndAddMarkup(searchValue, nextPage);
+  if (calcHits >= totalHits) {
+    console.log('HVATIT');
+    loadMoreBtnEl.classList.add('is-hidden');
+    return;
+  }
+  loadMoreBtnEl.classList.remove('is-hidden');
 }
 
 async function CreateAndAddMarkup(name, page) {
@@ -37,13 +60,12 @@ async function CreateAndAddMarkup(name, page) {
       Notiflix.Notify.warning(
         'Sorry, there are no images matching your search query. Please try again.'
       );
+      return;
     }
     totalHits = data.totalHits;
     nextPage += 1;
     calcHits += arrData.length;
 
-    //   console.log(nextPage);
-    //   console.log(totalHits, calcHits);
     const markup = arrData
       .map(
         ({
@@ -56,20 +78,20 @@ async function CreateAndAddMarkup(name, page) {
           downloads,
         }) => {
           return `
-    <div class="photo-card">
-        <img src="${webformatURL}" alt="${tags}" width="250" loading="lazy" />
+    <div class="photo-card"> 
+    
         <div class="info">
             <p class="info-item">
-                <b>${likes}</b>
+                <b>likes</b><span>${likes}</span>
             </p>
             <p class="info-item">
-                <b>${views}</b>
+                <b>views</b><span>${views}</span>
             </p>
             <p class="info-item">
-                <b>${comments}</b>
+                <b>comments</b><span>${comments}</span>
             </p>
             <p class="info-item">
-                <b>${downloads}</b>
+                <b>downloads</b><span>${downloads}</span>
             </p>
         </div>
     </div>
@@ -78,7 +100,39 @@ async function CreateAndAddMarkup(name, page) {
       )
       .join('');
     galleryEl.insertAdjacentHTML('beforeend', markup);
+    loadMoreBtnEl.classList.remove('is-hidden');
+    if (calcHits >= totalHits) {
+      Notiflix.Notify.warning('Cartinoc bolshe net');
+      loadMoreBtnEl.classList.add('is-hidden');
+      // resetParameters();
+
+      // nextPage = 1;
+      // calcHits = 0;
+      // totalHits;
+      // searchValue = '';
+
+      // console.log(nextPage, ' -nextPage');
+      console.log(calcHits, ' -calcPage');
+      console.log(totalHits, ' -totalHits');
+      // console.log(searchValue, ' -searchValue');
+      return;
+    }
+    // console.log(nextPage, ' -nextPage');
+    // console.log(calcHits, ' -nextPage');
+    // console.log(totalHits, ' -totalHits');
+    // console.log(searchValue, ' -searchValue');
   } catch (error) {
     console.log(error, error.message);
   }
 }
+
+function resetParameters() {
+  nextPage = 1;
+  calcHits = 0;
+  totalHits;
+  searchValue = '';
+}
+
+// <div class="box-img">
+//   <img src="${webformatURL}" alt="${tags}" loading="lazy" />
+// </div>;

@@ -6,7 +6,9 @@ const getRequest = axios.create({
   params: {
     key: '30999598-dc54c9ae8f4c38c0174094b65',
     image_type: 'photo',
-    per_page: 40,
+    per_page: 200,
+    orientation: 'horizontal',
+    safesearch: 'true',
   },
 });
 
