@@ -19,8 +19,8 @@ let searchValue = '';
 async function onSubmitForm(e) {
   e.preventDefault();
   resetParameters();
-
   hiddenLoadBtn();
+
   galleryEl.innerHTML = '';
 
   searchValue = e.currentTarget.searchQuery.value.trim();
@@ -33,7 +33,7 @@ async function onSubmitForm(e) {
 
   const data = await renderMarkup(searchValue);
 
-  if (calcHits >= data.totalHits) {
+  if (data?.totalHits && calcHits >= data.totalHits) {
     hiddenLoadBtn();
     return;
   }
@@ -94,7 +94,7 @@ async function renderMarkup(name, page) {
     showsButton();
     return data;
   } catch (error) {
-    console.log(error, error.message);
+    console.log(error);
   }
 }
 
