@@ -16,6 +16,5 @@ export async function getAllPages(nameImg, page = '1') {
   });
 
   const response = await getRequest.get();
-  console.log(response);
   return response.data;
 }

@@ -48,7 +48,6 @@ async function onClickLoadMoreBtn(e) {
   hiddenLoadBtn();
   const data = await renderMarkup(searchValue, nextPage);
   if (calcHits >= data.totalHits) {
-    console.log('HVATIT');
     Notiflix.Notify.warning(
       "We're sorry, but you've reached the end of search results."
     );
@@ -145,7 +144,3 @@ function hiddenLoadBtn() {
 function showsButton() {
   loadMoreBtnEl.classList.remove('is-hidden');
 }
-// console.log(nextPage, ' -nextPage');
-// console.log(calcHits, ' -calcHits');
-// console.log(totalHits, ' -totalHits');
-// console.log(searchValue, ' -searchValue');
