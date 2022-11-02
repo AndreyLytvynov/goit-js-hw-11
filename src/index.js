@@ -34,6 +34,7 @@ async function onSubmitForm(e) {
   await renderMarkup(searchValue);
 
   if (calcHits >= totalHits) {
+    hiddenLoadBtn();
     return;
   }
 }
@@ -48,6 +49,10 @@ async function onClickLoadMoreBtn(e) {
   await renderMarkup(searchValue, nextPage);
   if (calcHits >= totalHits) {
     console.log('HVATIT');
+    Notiflix.Notify.warning(
+      "We're sorry, but you've reached the end of search results."
+    );
+
     hiddenLoadBtn();
     resetParameters();
     return;
@@ -90,13 +95,13 @@ async function renderMarkup(name, page) {
 
     showsButton();
 
-    if (calcHits >= totalHits) {
-      Notiflix.Notify.warning(
-        "We're sorry, but you've reached the end of search results."
-      );
-      hiddenLoadBtn();
-      return;
-    }
+    // if (calcHits >= totalHits) {
+    //   Notiflix.Notify.warning(
+    //     "We're sorry, but you've reached the end of search results."
+    //   );
+    //   hiddenLoadBtn();
+    //   return;
+    // }
   } catch (error) {
     console.log(error, error.message);
   }
