@@ -31,7 +31,7 @@ async function onSubmitForm(e) {
     return;
   }
 
-  await CreateAndAddMarkup(searchValue);
+  await renderMarkup(searchValue);
 
   if (calcHits >= totalHits) {
     return;
@@ -45,7 +45,7 @@ async function onSubmitForm(e) {
  */
 async function onClickLoadMoreBtn(e) {
   hiddenLoadBtn();
-  await CreateAndAddMarkup(searchValue, nextPage);
+  await renderMarkup(searchValue, nextPage);
   if (calcHits >= totalHits) {
     console.log('HVATIT');
     hiddenLoadBtn();
@@ -69,7 +69,7 @@ async function onClickLoadMoreBtn(e) {
  * @param {*} page страница api которую нужно загрузить
  * @returns завершение функции при проверках
  */
-async function CreateAndAddMarkup(name, page) {
+async function renderMarkup(name, page) {
   try {
     const data = await getAllPages(name, page);
     const arrData = data.hits;
