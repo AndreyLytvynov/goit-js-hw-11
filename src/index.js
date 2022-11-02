@@ -1,4 +1,4 @@
-import { getAllCountries } from './api';
+import { getAllPages } from './api';
 import Notiflix from 'notiflix';
 
 const galleryEl = document.querySelector('.gallery');
@@ -20,7 +20,7 @@ let searchValue = '';
 async function onSubmitForm(e) {
   resetParameters();
   e.preventDefault();
-  loadMoreBtnEl.classList.add('is-hidden');
+  hiddenLoadBtn();
   galleryEl.innerHTML = '';
 
   searchValue = e.currentTarget.searchQuery.value.trim();
@@ -32,6 +32,7 @@ async function onSubmitForm(e) {
   }
 
   await CreateAndAddMarkup(searchValue);
+
   if (calcHits >= totalHits) {
     return;
   }
@@ -43,15 +44,23 @@ async function onSubmitForm(e) {
  * @returns завержает исполнение функции если если текущее кол-во фото на странице >= максимальному кол-ву доспнупному на сервере
  */
 async function onClickLoadMoreBtn(e) {
-  loadMoreBtnEl.classList.add('is-hidden');
+  hiddenLoadBtn();
   await CreateAndAddMarkup(searchValue, nextPage);
   if (calcHits >= totalHits) {
     console.log('HVATIT');
-    loadMoreBtnEl.classList.add('is-hidden');
+    hiddenLoadBtn();
     resetParameters();
     return;
   }
-  loadMoreBtnEl.classList.remove('is-hidden');
+  showsButton();
+
+  //Прокручивание страницы при нажатии на кнопку "показать больше"
+  const { height: cardHeight } =
+    galleryEl.firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+    top: cardHeight * 2.5,
+    behavior: 'smooth',
+  });
 }
 
 /**
@@ -62,7 +71,7 @@ async function onClickLoadMoreBtn(e) {
  */
 async function CreateAndAddMarkup(name, page) {
   try {
-    const data = await getAllCountries(name, page);
+    const data = await getAllPages(name, page);
     const arrData = data.hits;
     if (arrData.length === 0) {
       Notiflix.Notify.warning(
@@ -70,22 +79,42 @@ async function CreateAndAddMarkup(name, page) {
       );
       return;
     }
+
     totalHits = data.totalHits;
     nextPage += 1;
     calcHits += arrData.length;
 
-    const markup = arrData
-      .map(
-        ({
-          webformatURL,
-          largeImageURL,
-          tags,
-          likes,
-          views,
-          comments,
-          downloads,
-        }) => {
-          return `
+    const markup = createMarkup(arrData);
+
+    galleryEl.insertAdjacentHTML('beforeend', markup);
+
+    showsButton();
+
+    if (calcHits >= totalHits) {
+      Notiflix.Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+      );
+      hiddenLoadBtn();
+      return;
+    }
+  } catch (error) {
+    console.log(error, error.message);
+  }
+}
+
+function createMarkup(arr) {
+  return arr
+    .map(
+      ({
+        webformatURL,
+        largeImageURL,
+        tags,
+        likes,
+        views,
+        comments,
+        downloads,
+      }) => {
+        return `
     <div class="photo-card"> 
         <div class="box-img"><img src="${webformatURL}" alt="${tags}" loading="lazy" /></div>
         <div class="info">
@@ -104,33 +133,22 @@ async function CreateAndAddMarkup(name, page) {
         </div>
     </div>
           `;
-        }
-      )
-      .join('');
-
-    galleryEl.insertAdjacentHTML('beforeend', markup);
-
-    loadMoreBtnEl.classList.remove('is-hidden');
-
-    if (calcHits >= totalHits) {
-      Notiflix.Notify.warning(
-        "We're sorry, but you've reached the end of search results."
-      );
-      loadMoreBtnEl.classList.add('is-hidden');
-      return;
-    }
-  } catch (error) {
-    console.log(error, error.message);
-  }
+      }
+    )
+    .join('');
 }
-
 function resetParameters() {
   nextPage = 1;
   calcHits = 0;
   totalHits;
   searchValue = '';
 }
-
+function hiddenLoadBtn() {
+  loadMoreBtnEl.classList.add('is-hidden');
+}
+function showsButton() {
+  loadMoreBtnEl.classList.remove('is-hidden');
+}
 // console.log(nextPage, ' -nextPage');
 // console.log(calcHits, ' -calcHits');
 // console.log(totalHits, ' -totalHits');
