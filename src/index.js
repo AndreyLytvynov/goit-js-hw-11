@@ -10,7 +10,6 @@ loadMoreBtnEl.addEventListener('click', onClickLoadMoreBtn);
 
 let nextPage = 1;
 let calcHits = 0;
-let totalHits;
 let searchValue = '';
 
 /**
@@ -18,8 +17,9 @@ let searchValue = '';
  * @param {Event} e ивент формы
  */
 async function onSubmitForm(e) {
-  resetParameters();
   e.preventDefault();
+  resetParameters();
+
   hiddenLoadBtn();
   galleryEl.innerHTML = '';
 
@@ -31,9 +31,9 @@ async function onSubmitForm(e) {
     return;
   }
 
-  await renderMarkup(searchValue);
+  const data = await renderMarkup(searchValue);
 
-  if (calcHits >= totalHits) {
+  if (calcHits >= data.totalHits) {
     hiddenLoadBtn();
     return;
   }
@@ -46,8 +46,8 @@ async function onSubmitForm(e) {
  */
 async function onClickLoadMoreBtn(e) {
   hiddenLoadBtn();
-  await renderMarkup(searchValue, nextPage);
-  if (calcHits >= totalHits) {
+  const data = await renderMarkup(searchValue, nextPage);
+  if (calcHits >= data.totalHits) {
     console.log('HVATIT');
     Notiflix.Notify.warning(
       "We're sorry, but you've reached the end of search results."
@@ -85,7 +85,6 @@ async function renderMarkup(name, page) {
       return;
     }
 
-    totalHits = data.totalHits;
     nextPage += 1;
     calcHits += arrData.length;
 
@@ -94,14 +93,7 @@ async function renderMarkup(name, page) {
     galleryEl.insertAdjacentHTML('beforeend', markup);
 
     showsButton();
-
-    // if (calcHits >= totalHits) {
-    //   Notiflix.Notify.warning(
-    //     "We're sorry, but you've reached the end of search results."
-    //   );
-    //   hiddenLoadBtn();
-    //   return;
-    // }
+    return data;
   } catch (error) {
     console.log(error, error.message);
   }
@@ -121,7 +113,7 @@ function createMarkup(arr) {
       }) => {
         return `
     <div class="photo-card"> 
-        <div class="box-img"><img src="${webformatURL}" alt="${tags}" loading="lazy" /></div>
+        <div class="box-img"><img src="${webformatURL}" alt="${tags}" loading="lazy" width="300"/></div>
         <div class="info">
             <p class="info-item">
                 <b>likes</b><span>${likes}</span>
@@ -145,7 +137,6 @@ function createMarkup(arr) {
 function resetParameters() {
   nextPage = 1;
   calcHits = 0;
-  totalHits;
   searchValue = '';
 }
 function hiddenLoadBtn() {
